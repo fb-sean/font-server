@@ -38,6 +38,11 @@ src: url(https://fonts.gstatic.com/s/inter/v13/UcC73FwrK3iLTeHuS_fvQtMwCp50KnMa2
 src: url(https://example.com/fetch/inter/v13/UcC73FwrK3iLTeHuS_fvQtMwCp50KnMa2JL7SUc.woff2) format('woff2');
 ```
 
+### OR
+
+```html
+<link type="text/css" href="//example.com/search?family=Google%20Sans%20Text%3A400%2C500%2C700" rel="stylesheet">
+```
 
 ---
 
