@@ -1,0 +1,42 @@
+{
+  "compilerOptions": {
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "target": "es2022",
+    "allowJs": true,
+    "resolveJsonModule": true,
+    "moduleDetection": "force",
+    "isolatedModules": true,
+    "strict": true,
+    "noImplicitAny": false,
+    "noImplicitOverride": true,
+    "module": "CommonJS",
+    "outDir": "dist",
+    "sourceMap": true,
+    "lib": ["es2022"],
+    "baseUrl": ".",
+    "paths": {
+      "@Utils/*": [
+        "src/Utils/*"
+      ],
+      "@API/*": [
+        "src/API/*"
+      ],
+      "@Events/*": [
+        "src/Events/*"
+      ],
+      "@Schemas/*": [
+        "src/Schemas/*"
+      ],
+      "@Types/*": [
+        "src/Types/*"
+      ]
+    }
+  },
+  "include": [
+    "src/**/*"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}
