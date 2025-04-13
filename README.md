@@ -1,6 +1,6 @@
-# 📁 File Server
+# 📁 Font Server
 
-A blazing fast, minimal file server built with raw `node:http` and `axios`.  
+A blazing fast, minimal font server built with raw `node:http` and `axios`.  
 Includes a smart TypeScript **Google Fonts Proxy** with caching and support for **Hetzner Storage Box** (currently WIP).
 
 ---
