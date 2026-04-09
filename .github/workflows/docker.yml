@@ -11,7 +11,7 @@ on:
       - main
 
 env:
-  DOCKER_IMAGE: fb-sean/font-server
+  DOCKER_IMAGE: seandoescode/font-server
   REGISTRY: docker.io
 
 jobs:

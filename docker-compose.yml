@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   font-server:
-    image: fb-sean/font-server:latest
+    image: seandoescode/font-server:latest
     container_name: font-server
     restart: unless-stopped
 

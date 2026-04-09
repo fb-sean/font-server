@@ -51,7 +51,7 @@ version: '3.8'
 
 services:
   font-server:
-    image: fb-sean/font-server:latest
+    image: seandoescode/font-server:latest
     container_name: font-server
     restart: unless-stopped
 
@@ -190,7 +190,7 @@ npm start
 ### Pull the Image
 
 ```bash
-docker pull fb-sean/font-server:latest
+docker pull seandoescode/font-server:latest
 ```
 
 ### Run with Docker CLI
@@ -205,7 +205,7 @@ docker run -d \
   -e STORAGE_PATH=/fonts/ \
   -e STORAGE_USER=user123 \
   -e STORAGE_PASSWORD=password \
-  fb-sean/font-server:latest
+  seandoescode/font-server:latest
 ```
 
 ### Run with Custom .env File
@@ -215,7 +215,7 @@ docker run -d \
   --name font-server \
   -p 3000:3000 \
   --env-file .env \
-  fb-sean/font-server:latest
+  seandoescode/font-server:latest
 ```
 
 ## Building Locally
