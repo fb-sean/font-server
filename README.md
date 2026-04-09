@@ -51,7 +51,7 @@ version: '3.8'
 
 services:
   font-server:
-    image: seandoescode/font-server:latest
+    image: ghcr.io/fb-sean/font-server:latest
     container_name: font-server
     restart: unless-stopped
 
@@ -190,7 +190,7 @@ npm start
 ### Pull the Image
 
 ```bash
-docker pull seandoescode/font-server:latest
+docker pull ghcr.io/fb-sean/font-server:latest
 ```
 
 ### Run with Docker CLI
@@ -205,7 +205,7 @@ docker run -d \
   -e STORAGE_PATH=/fonts/ \
   -e STORAGE_USER=user123 \
   -e STORAGE_PASSWORD=password \
-  seandoescode/font-server:latest
+  ghcr.io/fb-sean/font-server:latest
 ```
 
 ### Run with Custom .env File
@@ -215,7 +215,7 @@ docker run -d \
   --name font-server \
   -p 3000:3000 \
   --env-file .env \
-  seandoescode/font-server:latest
+  ghcr.io/fb-sean/font-server:latest
 ```
 
 ## Building Locally
@@ -229,26 +229,28 @@ docker run -p 3000:3000 --env-file .env font-server
 
 ### Using GitHub Actions
 
-This project includes a GitHub Actions workflow that automatically builds and publishes Docker images to Docker Hub when you push to the main branch or create version tags.
+This project includes a GitHub Actions workflow that automatically builds and publishes Docker images to GitHub Container Registry (GHCR) when you push to the main branch or create version tags.
 
-To enable automatic publishing:
+No additional configuration needed! The workflow uses your GitHub token automatically.
 
-1. Fork this repository
-2. Add `DOCKER_USERNAME` and `DOCKER_PASSWORD` secrets to your repository settings
-3. Push to your fork or create version tags
-
-### Manual Deployment
+### Manual Deployment to GitHub Container Registry
 
 1. Build the Docker image:
 ```bash
-docker build -t your-username/font-server:latest .
+docker build -t ghcr.io/YOUR_USERNAME/font-server:latest .
 ```
 
-2. Push to Docker Hub:
+2. Log in to GitHub Container Registry:
 ```bash
-docker login
-docker push your-username/font-server:latest
+echo YOUR_GITHUB_TOKEN | docker login ghcr.io -u YOUR_USERNAME --password-stdin
 ```
+
+3. Push to GitHub Container Registry:
+```bash
+docker push ghcr.io/YOUR_USERNAME/font-server:latest
+```
+
+To get a GitHub token, go to: https://github.com/settings/tokens
 
 ## Contributing
 
