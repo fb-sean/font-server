@@ -103,8 +103,6 @@ export class HttpClient {
                     const routeParts = route.split('/').filter(Boolean);
                     const urlParts = req.path.split('/').filter(Boolean);
 
-                    if (routeParts.length !== urlParts.length) continue;
-
                     let matched = true;
                     const params: Record<string, string> = {};
 
@@ -112,10 +110,24 @@ export class HttpClient {
                         const routePart = routeParts[i];
                         const urlPart = urlParts[i];
 
+                        if (routePart === '*') {
+                            params['wildcard'] = urlParts.slice(i).join('/');
+
+                            break;
+                        }
+
+                        if (!urlPart) {
+                            matched = false;
+
+                            break;
+                        }
+
+
                         if (routePart.startsWith(':')) {
                             params[routePart.slice(1)] = urlPart;
                         } else if (routePart !== urlPart) {
                             matched = false;
+
                             break;
                         }
                     }

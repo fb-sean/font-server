@@ -11,7 +11,7 @@ export default class FetchRoute implements TRoute {
 
     async execute(req: TIncomingMessage, res: TServerResponse) {
         const reqUrl = new URL(req.url!, `http://${req.headers.host}`);
-        const filePath = decodeURIComponent(reqUrl.pathname.replace(/^\/fetch\//, ''));
+        const filePath = decodeURIComponent(reqUrl.pathname.replace(/^\/fetch\//, '').replace(/^\/s\//, ''));
         const mime = getMimeType(filePath);
 
         const cached = await Storage.getInstance().getFile(filePath);
@@ -20,6 +20,7 @@ export default class FetchRoute implements TRoute {
             if (req.headers['if-none-match'] === etag) {
                 res.statusCode = 304;
                 res.end();
+
                 return;
             }
 
@@ -30,6 +31,7 @@ export default class FetchRoute implements TRoute {
             });
 
             res.end(cached);
+
             return;
         }
 
@@ -53,6 +55,8 @@ export default class FetchRoute implements TRoute {
 
             Logger.debug('Font saved after fetch.', 'FETCH');
         } catch (e) {
+            Logger.error(`Failed to fetch font ${filePath}`, 'FETCH');
+            console.error(e);
             return Response(res, 'Font not found', 404);
         }
     }

@@ -35,13 +35,18 @@ src: url(https://fonts.gstatic.com/s/inter/v13/UcC73FwrK3iLTeHuS_fvQtMwCp50KnMa2
 **=>**
 
 ```css
-src: url(https://example.com/fetch/inter/v13/UcC73FwrK3iLTeHuS_fvQtMwCp50KnMa2JL7SUc.woff2) format('woff2');
+src: url(https://example.com/s/inter/v13/UcC73FwrK3iLTeHuS_fvQtMwCp50KnMa2JL7SUc.woff2) format('woff2');
 ```
 
 ### OR
+```html
+<link type="text/css" href="https://fonts.googleapis.com/css?family=Tangerine" rel="stylesheet">
+```
+
+**=>**
 
 ```html
-<link type="text/css" href="//example.com/search?family=Google%20Sans%20Text%3A400%2C500%2C700" rel="stylesheet">
+<link type="text/css" href="https://example.com/css?family=Tangerine" rel="stylesheet">
 ```
 
 ---
@@ -51,7 +56,7 @@ src: url(https://example.com/fetch/inter/v13/UcC73FwrK3iLTeHuS_fvQtMwCp50KnMa2JL
 Send a request like:
 
 ```
-GET /fetch/inter/v13/UcC73FwrK3iLTeHuS_fvQtMwCp50KnMa1ZL7.woff2
+GET /s/inter/v13/UcC73FwrK3iLTeHuS_fvQtMwCp50KnMa1ZL7.woff2
 ```
 
 The server will:

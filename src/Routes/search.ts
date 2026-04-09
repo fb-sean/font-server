@@ -2,7 +2,7 @@ import type {TIncomingMessage, TRoute, TServerResponse} from "@Types/HttpClient"
 import {Response, setHeaders} from "@Utils/Http";
 import axios from "axios";
 
-export default class CssRoute implements TRoute {
+export default class SearchRoute implements TRoute {
     method = 'GET';
     path = '/search';
 
@@ -17,7 +17,7 @@ export default class CssRoute implements TRoute {
                 }
             });
 
-            const replaced = data.replace(/https:\/\/fonts\.gstatic\.com\/s\/([^\/]+\/[^\/]+\/[^)'" ]+)/g, (process.env.URL + '/fetch/$1'));
+            const replaced = data.replace(/https:\/\/fonts\.gstatic\.com\/s\/([^\/]+\/[^\/]+\/[^)'" ]+)/g, (process.env.URL + '/s/$1'));
 
             setHeaders(res, {
                 'Content-Type': 'text/css; charset=utf-8',
