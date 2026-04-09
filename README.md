@@ -5,7 +5,7 @@ A simple font server for serving fonts to the web. This server acts as a proxy f
 ## Features
 
 - Serve fonts from your own domain
-- Storage backend integration (Hetzner Storage Box, etc.)
+- Storage backend integration (Hetzner Storage Box, etc.) - coming soon
 - Easy configuration via environment variables
 - Docker support for easy deployment
 - Search endpoint for font discovery
@@ -21,11 +21,11 @@ Create a `.env` file in the same directory as your `docker-compose.yml`:
 PORT=3000
 URL=https://fonts.yourdomain.com
 
-# Storage Configuration
-STORAGE_URL=https://your-storagebox.de
-STORAGE_PATH=/fonts/
-STORAGE_USER=your-username
-STORAGE_PASSWORD=your-password
+# Storage Configuration (Optional - currently not supported)
+# STORAGE_URL=https://your-storagebox.de
+# STORAGE_PATH=/fonts/
+# STORAGE_USER=your-username
+# STORAGE_PASSWORD=your-password
 ```
 
 ### 2. Start the Server
@@ -51,7 +51,7 @@ version: '3.8'
 
 services:
   font-server:
-    image: ghcr.io/fb-sean/font-server:latest
+    image: ghcr.io/fb-sean/font-server:main
     container_name: font-server
     restart: unless-stopped
 
@@ -60,11 +60,11 @@ services:
       - PORT=3000
       - URL=https://fonts.yourdomain.com
 
-      # Storage Configuration
-      - STORAGE_URL=https://your-storagebox.de
-      - STORAGE_PATH=/fonts/
-      - STORAGE_USER=your-username
-      - STORAGE_PASSWORD=your-password
+      # Storage Configuration (Optional - currently not supported)
+      # - STORAGE_URL=https://your-storagebox.de
+      # - STORAGE_PATH=/fonts/
+      # - STORAGE_USER=your-username
+      # - STORAGE_PASSWORD=your-password
 
     ports:
       - "3000:3000"
@@ -84,16 +84,16 @@ services:
 | Variable | Description | Example |
 |----------|-------------|---------|
 | `URL` | The base URL for your font server | `https://fonts.example.com` |
-| `STORAGE_URL` | Your storage service URL | `https://storagebox.example.com` |
-| `STORAGE_USER` | Storage authentication username | `user123` |
-| `STORAGE_PASSWORD` | Storage authentication password | `securepassword` |
 
 ### Optional Variables
 
 | Variable | Description | Default |
 |----------|-------------|---------|
 | `PORT` | The port the server listens on | `3000` |
+| `STORAGE_URL` | Your storage service URL (currently not supported) | - |
 | `STORAGE_PATH` | The path where fonts are stored | `/fonts/` |
+| `STORAGE_USER` | Storage authentication username (currently not supported) | - |
+| `STORAGE_PASSWORD` | Storage authentication password (currently not supported) | - |
 
 ## Manual Installation
 
@@ -190,7 +190,7 @@ npm start
 ### Pull the Image
 
 ```bash
-docker pull ghcr.io/fb-sean/font-server:latest
+docker pull ghcr.io/fb-sean/font-server:main
 ```
 
 ### Run with Docker CLI
@@ -201,12 +201,10 @@ docker run -d \
   -p 3000:3000 \
   -e PORT=3000 \
   -e URL=https://fonts.example.com \
-  -e STORAGE_URL=https://storagebox.example.com \
-  -e STORAGE_PATH=/fonts/ \
-  -e STORAGE_USER=user123 \
-  -e STORAGE_PASSWORD=password \
-  ghcr.io/fb-sean/font-server:latest
+  ghcr.io/fb-sean/font-server:main
 ```
+
+> **Note**: Storage configuration is currently not supported. The server works without storage environment variables.
 
 ### Run with Custom .env File
 
@@ -215,7 +213,7 @@ docker run -d \
   --name font-server \
   -p 3000:3000 \
   --env-file .env \
-  ghcr.io/fb-sean/font-server:latest
+  ghcr.io/fb-sean/font-server:main
 ```
 
 ## Building Locally

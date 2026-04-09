@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   font-server:
-    image: ghcr.io/fb-sean/font-server:latest
+    image: ghcr.io/fb-sean/font-server:main
     container_name: font-server
     restart: unless-stopped
 
