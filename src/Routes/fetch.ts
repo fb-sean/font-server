@@ -42,6 +42,7 @@ export default class FetchRoute implements TRoute {
             await Storage.getInstance().writeFile(filePath, Buffer.from(data));
 
             const etag = generateEtag(data);
+
             setHeaders(res, {
                 'Content-Type': mime,
                 'ETag': etag,

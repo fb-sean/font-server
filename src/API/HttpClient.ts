@@ -1,5 +1,5 @@
 import * as http from "node:http";
-import type {
+import {
     TIncomingMessage,
     TMiddlewareHandler,
     TMiddlewareNext,
@@ -16,6 +16,7 @@ export class HttpClient {
     private _routesList: string[] = [];
     private _globalMiddlewares: TMiddlewareHandler[] = [];
     private _routeMiddlewares: TMiddlewares = {};
+    private readonly timeoutMs = 90000; // 1 minute 30 seconds
 
     add(method: string, route: string, callback: TRouteHandler): void {
         method = method.toUpperCase();
@@ -64,15 +65,37 @@ export class HttpClient {
             }
 
             if (this._globalMiddlewares.length > 0) {
-                if (!(await this.handleMiddlewares(this._globalMiddlewares, req, res))) return;
+                if (!(await this.handleMiddlewares(this._globalMiddlewares, req, res))) {
+                    return;
+                }
             }
 
             if (this._routeMiddlewares[req.path]) {
-                if (!(await this.handleMiddlewares(this._routeMiddlewares[req.path], req, res))) return;
+                if (!(await this.handleMiddlewares(this._routeMiddlewares[req.path], req, res))) {
+                    return;
+                }
             }
 
-            if (this._routes[method]?.[req.path]) {
-                return this._routes[method][req.path](req, res);
+            if (method === 'OPTIONS') {
+                for (const route of this._routesList) {
+                    const routeParts = route.split('/');
+                    const urlParts = req.path.split('/');
+
+                    if (routeParts.length === urlParts.length) {
+                        const params = getParams(req, {path: route});
+
+                        if (Object.keys(params).length > 0 || route === req.path) {
+                            return Response(res, {
+                                status: 200,
+                                message: 'OK'
+                            });
+                        }
+                    }
+                }
+            }
+
+            if (this._routes[method] && this._routes[method][req.path]) {
+                return this.executeWithTimeout(this._routes[method][req.path], req, res);
             }
 
             if (this._routes[method]) {
@@ -80,26 +103,18 @@ export class HttpClient {
                     const routeParts = route.split('/').filter(Boolean);
                     const urlParts = req.path.split('/').filter(Boolean);
 
-                    const params: Record<string, string> = {};
+                    if (routeParts.length !== urlParts.length) continue;
+
                     let matched = true;
+                    const params: Record<string, string> = {};
 
                     for (let i = 0; i < routeParts.length; i++) {
-                        const r = routeParts[i];
-                        const u = urlParts[i];
+                        const routePart = routeParts[i];
+                        const urlPart = urlParts[i];
 
-                        if (r === '*') {
-                            params['wildcard'] = urlParts.slice(i).join('/');
-                            break;
-                        }
-
-                        if (!u) {
-                            matched = false;
-                            break;
-                        }
-
-                        if (r.startsWith(':')) {
-                            params[r.slice(1)] = u;
-                        } else if (r !== u) {
+                        if (routePart.startsWith(':')) {
+                            params[routePart.slice(1)] = urlPart;
+                        } else if (routePart !== urlPart) {
                             matched = false;
                             break;
                         }
@@ -107,12 +122,16 @@ export class HttpClient {
 
                     if (matched) {
                         req.params = params;
-                        return this._routes[method][route](req, res);
+
+                        return this.executeWithTimeout(this._routes[method][route], req, res);
                     }
                 }
             }
 
-            return Response(res, {status: 404, message: 'Not Found'}, 404);
+            return Response(res, {
+                status: 404,
+                message: 'Not Found'
+            }, 404);
         });
 
         server.listen(port, () => {
@@ -127,6 +146,49 @@ export class HttpClient {
         }
 
         return true;
+    }
+
+    private async executeWithTimeout(handler: TRouteHandler, req: TIncomingMessage, res: TServerResponse): Promise<void> {
+        let timeoutId: NodeJS.Timeout | null = null;
+        let isTimedOut = false;
+
+        const timeoutPromise = new Promise<void>((resolve) => {
+            timeoutId = setTimeout(() => {
+                isTimedOut = true;
+                if (!res.writableEnded) {
+                    Logger.warn(`Request timeout for ${req.method} ${req.path}`, 'HTTP');
+
+                    Response(res, {
+                        status: 524,
+                        message: 'Timeout'
+                    }, 524);
+                }
+
+                resolve();
+            }, this.timeoutMs);
+        });
+
+        const handlerPromise = Promise.resolve(handler(req, res)).then(() => {
+            if (timeoutId && !isTimedOut) {
+                clearTimeout(timeoutId);
+            }
+        }).catch((error) => {
+            if (timeoutId && !isTimedOut) {
+                clearTimeout(timeoutId);
+            }
+
+            if (!res.writableEnded) {
+                Logger.error(`Request error for ${req.method} ${req.path}: ${error.message}`, 'HTTP');
+                console.log(error);
+
+                Response(res, {
+                    status: 500,
+                    message: 'Error'
+                }, 500);
+            }
+        });
+
+        await Promise.race([handlerPromise, timeoutPromise]);
     }
 
     private async parseRequestBody(req: TIncomingMessage): Promise<any> {
