@@ -1,0 +1,61 @@
+version: '3.8'
+
+services:
+  font-server:
+    image: fb-sean/font-server:latest
+    container_name: font-server
+    restart: unless-stopped
+
+    # Environment variables
+    # You can also use a .env file in the same directory
+    environment:
+      # Server Configuration
+      # The port the server will listen on (default: 3000)
+      - PORT=${PORT:-3000}
+
+      # The base URL for your font server
+      # Used for generating font URLs in responses
+      - URL=${URL:-http://localhost:3000}
+
+      # Storage Configuration
+      # Your storage service URL (e.g., Hetzner Storage Box, S3, etc.)
+      - STORAGE_URL=${STORAGE_URL}
+
+      # The path where fonts are stored on your storage service
+      - STORAGE_PATH=${STORAGE_PATH:-/fonts/}
+
+      # Storage authentication credentials
+      - STORAGE_USER=${STORAGE_USER}
+      - STORAGE_PASSWORD=${STORAGE_PASSWORD}
+
+    # Port mapping
+    # Format: "HOST_PORT:CONTAINER_PORT"
+    ports:
+      - "${PORT:-3000}:3000"
+
+    # Optional: Add volumes if you need local storage access
+    # volumes:
+    #   - ./local-fonts:/app/fonts
+
+    # Optional: Add health check
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:3000/ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+    # Optional: Resource limits
+    # deploy:
+    #   resources:
+    #     limits:
+    #       cpus: '0.5'
+    #       memory: 512M
+    #     reservations:
+    #       cpus: '0.25'
+    #       memory: 256M
+
+# Optional: Define networks for service communication
+# networks:
+#   default:
+#     name: font-server-network
